@@ -6,7 +6,9 @@ spec:
   params:
     - name: image-name
       type: string
-      description: Name of the image to deploy (must match the one used in kaniko build)
+      description: |
+        Name of the image to deploy
+        (must match the one used in kaniko build)
     - name: deployment-name
       type: string
       description: Name for the deployment
