@@ -14,10 +14,6 @@ spec:
           params:
             - name: "eventTypes"
               value: ["push"]
-            # - name: "secretRef"
-            #   value:
-            #     secretName: github-secret
-            #     secretKey: secretToken
       bindings:
       - ref: github-push-binding
       template:

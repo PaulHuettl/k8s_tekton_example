@@ -27,14 +27,10 @@ spec:
   - name: image-data
     description: | 
       This workspace contains the docker image
-  # - name: data-data
-  #   description: | 
-  #     This workspace contains data to be mounted into containers
   tasks:
   - name: fetch-source
     taskRef:
       name: git-clone
-    # The name "output" is expected for the predifined task
     workspaces:
     - name: output
       workspace: repo-data

@@ -34,7 +34,7 @@ spec:
         - name: docker-socket
           mountPath: /var/run/docker.sock
     - name: deploy
-      # TODO: that would be nicer as seperate task
+      # TODO: that would be nicer as seperate task in seperate yaml
       image: bitnami/kubectl
       script: |
         #!/usr/bin/env bash
