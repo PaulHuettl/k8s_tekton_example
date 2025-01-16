@@ -1,0 +1,21 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: github-push-binding
+spec:
+  params:
+  - name: gitrevision
+    value: $(body.head_commit.id)
+  - name: repourl
+    value: $(body.repository.html_url)
+  - name: branch
+    value: $(body.ref)
+  - name: image-reference
+    value: test-image
+  - name: image-name
+    value: bella-img
+  - name: repo-name
+  # TODO: remove hardcoding
+    value: read-file
+  - name: deployment-name
+    value: bellatrix-deployment

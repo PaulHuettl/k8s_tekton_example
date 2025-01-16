@@ -1,0 +1,70 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: deploy-local-image
+spec:
+  params:
+    - name: image-name
+      type: string
+      description: Name of the image to deploy (must match the one used in kaniko build)
+    - name: deployment-name
+      type: string
+      description: Name for the deployment
+      default: "myapp-deployment"
+  workspaces:
+    - name: source
+      description: Workspace containing the image.tar file
+  steps:
+    - name: load-image
+      image: docker
+      script: |
+        #!/bin/sh
+        # Start Docker daemon
+        dockerd-entrypoint.sh &
+        sleep 5  # Wait for Docker to start
+        
+        # Load the image
+        docker load < $(workspaces.source.path)/image.tar
+        echo "Available images after loading:"
+        docker images
+      securityContext:
+        privileged: true
+      volumeMounts:
+        # This is essential for the container to talk to Minikubes DockerAPI
+        - name: docker-socket
+          mountPath: /var/run/docker.sock
+    - name: deploy
+      # TODO: that would be nicer as seperate task
+      image: bitnami/kubectl
+      script: |
+        #!/usr/bin/env bash
+        # Create the deployment
+        cat <<EOF | kubectl apply -f -
+        apiVersion: batch/v1
+        kind: Job
+        metadata:
+          name: $(params.deployment-name)
+        spec:
+          template:
+            spec:
+              serviceAccountName: tekton-robot
+              containers:
+              - name: myapp
+                image: $(params.image-name)
+                imagePullPolicy: Never
+                volumeMounts:
+                - name: data-volume
+                  mountPath: /app/data
+              volumes:
+              - name: data-volume
+                persistentVolumeClaim:
+                  claimName: data-pvc
+              restartPolicy: Never
+        EOF
+      securityContext:
+        runAsUser: 0
+  volumes:
+    - name: docker-socket
+      hostPath:
+        path: /var/run/docker.sock
+        type: Socket

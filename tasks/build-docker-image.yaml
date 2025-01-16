@@ -1,0 +1,40 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: kaniko-build-only
+spec:
+  workspaces:
+    - name: source
+    - name: registry
+  params:
+    - name: dockerfile
+      type: string
+      description: Path to the Dockerfile
+      default: "./Dockerfile"
+    - name: context
+      type: string
+      description: The build context directory
+      default: "."
+    - name: image-name
+      type: string
+      description: Name for the built image
+    - name: repo-name
+      type: string
+      description: Name of the repo folder containing the docker file
+  steps:
+    - name: build-only
+      image: gcr.io/kaniko-project/executor:latest
+      args:
+        - "--dockerfile=$(workspaces.source.path)/$(params.dockerfile)"
+        - "--context=$(workspaces.source.path)/$(params.context)"
+        - "--no-push"
+        - "--tar-path=$(workspaces.registry.path)/image.tar"
+        - "--destination=$(params.image-name)"
+      securityContext:
+        runAsUser: 0
+  #     volumeMounts:
+  #       - name: docker
+  #         mountPath: /docker
+  # volumes:
+  #   - name: docker
+  #     emptyDir: {}

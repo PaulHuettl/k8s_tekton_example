@@ -1,0 +1,19 @@
+[build-system]
+requires = [
+    "setuptools>=61.0",
+    "wheel >= 0.38",
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.package-data]
+"*" = ["*.yaml"]
+
+[project]
+
+name = "hello-repo"
+version = "0.0.1"
+description = "Test package to try out tekton pipelines"
+readme = "README.md"
+authors = [
+    {name = "Paul Huettl"},
+]

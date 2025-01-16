@@ -1,0 +1,51 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: github-push-template
+spec:
+  params:
+  - name: gitrevision
+  - name: repourl
+  - name: branch
+  - name: image-reference
+  - name: image-name
+  - name: repo-name
+  - name: deployment-name
+  resourcetemplates:
+  - apiVersion: tekton.dev/v1beta1
+    kind: PipelineRun
+    metadata:
+      generateName: ci-cd
+    spec:
+      serviceAccountName: tekton-robot
+      pipelineRef:
+        name: ci-cd
+      podTemplate:
+        securityContext:
+          fsGroup: 65532
+      workspaces:
+      - name: repo-data
+        persistentVolumeClaim:
+          claimName: git-pvc
+        subPath: $(tt.params.repo-name)
+      - name: image-data
+        persistentVolumeClaim:
+          claimName: docker-registry-pvc
+      - name: data-data
+        persistentVolumeClaim:
+          claimName: data-pvc
+      params:
+      - name: git-revision
+        value: $(tt.params.gitrevision)
+      - name: repo-url
+        value: $(tt.params.repourl)
+      - name: git-branch
+        value: $(tt.params.branch)
+      - name: image-reference
+        value: $(tt.params.image-reference)
+      - name: image-name
+        value: $(tt.params.image-name)
+      - name: repo-name
+        value: $(tt.params.repo-name)
+      - name: deployment-name
+        value: $(tt.params.deployment-name)

@@ -1,0 +1,78 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: ci-cd-
+spec:
+  description: | 
+    This pipeline clones a git repo,
+    echoes README to stdout,
+    builds docker container,
+    deploys job on cluster
+  params:
+  - name: repo-url
+    type: string
+    description: The git repo URL to clone from.
+  - name: image-reference
+    type: string
+  - name: image-name
+    type: string
+  - name: repo-name
+    type: string
+  - name: deployment-name
+    type: string
+  workspaces:
+  - name: repo-data
+    description: |
+      This workspace contains the cloned repository
+  - name: image-data
+    description: | 
+      This workspace contains the docker image
+  # - name: data-data
+  #   description: | 
+  #     This workspace contains data to be mounted into containers
+  tasks:
+  - name: fetch-source
+    taskRef:
+      name: git-clone
+    # The name "output" is expected for the predifined task
+    workspaces:
+    - name: output
+      workspace: repo-data
+    params:
+    - name: url
+      value: $(params.repo-url)
+  - name: show-readme
+    runAfter: ["fetch-source"]
+    taskRef:
+      name: show-readme
+    workspaces:
+    - name: source
+      workspace: repo-data
+  - name: build
+    runAfter: ["show-readme"]
+    taskRef:
+      name: kaniko-build-only
+    workspaces:
+    - name: source
+      workspace: repo-data
+    - name: registry
+      workspace: image-data
+    params:
+    - name: image-reference
+      value: $(params.image-reference)
+    - name: image-name
+      value: $(params.image-name)
+    - name: repo-name
+      value: $(params.repo-name)
+  - name: deploy
+    runAfter: ["build"]
+    taskRef:
+      name: deploy-local-image
+    workspaces:
+      - name: source
+        workspace: image-data
+    params:
+      - name: image-name
+        value: $(params.image-name)
+      - name: deployment-name
+        value: $(params.deployment-name)
