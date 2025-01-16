@@ -32,9 +32,3 @@ spec:
         - "--destination=$(params.image-name)"
       securityContext:
         runAsUser: 0
-  #     volumeMounts:
-  #       - name: docker
-  #         mountPath: /docker
-  # volumes:
-  #   - name: docker
-  #     emptyDir: {}
