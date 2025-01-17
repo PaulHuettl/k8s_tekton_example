@@ -71,7 +71,7 @@ So simply create a public GitHub repo with the content of the read-file folder.
 Now in the GitHub Webhook options of the repo paste the link provided by `ngrok` and make sure to set the
 content type to `application/json`.
 
-## Triggering the pipeline
+## Triggering the Pipeline
 
 Now that everything is setup we can see our CI/CD pipeline in action.
 Modify the README.md of the read-file repo locally and push it.
@@ -81,7 +81,7 @@ Now monitor your kubernetes cluster via
 kubectl get pods -A
 ```
 
-You should see the pods appearing corresponding to the tasks contained in the pipeline, so e.g.
+You should see the pods appearing corresponding to the tasks contained in the Pipeline, so e.g.
 `ci-cd-vjnsn-fetch-source-pod`
 
 If everything goes through, after a good minute you should see a pod `read-file-deployment-<id>`
@@ -90,6 +90,13 @@ Now log this pod via
 kubectl logs read-file-deployment-<id>
 ```
 and you will see the output `Hello from image` which is exactly the content from the mounted `.txt`.🙌
+
+## Deleting the Cluster
+
+After you are done you can tear down your local cluster via
+```bash
+minikube delete
+```
 
 ## Debugging
 
