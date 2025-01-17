@@ -18,4 +18,4 @@ spec:
   # TODO: remove hardcoding
     value: read-file
   - name: deployment-name
-    value: bellatrix-deployment
+    value: read-file-deployment

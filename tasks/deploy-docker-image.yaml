@@ -27,6 +27,7 @@ spec:
         
         # Load the image
         docker load < $(workspaces.source.path)/image.tar
+        # Logging to see if image was loaded correctly
         echo "Available images after loading:"
         docker images
       securityContext:
